@@ -1,0 +1,194 @@
+openapi: 3.0.3
+info:
+  title: Antigravity Template API
+  description: A fully formed sample OpenAPI 3.0 specification demonstrating standard endpoint design, request/response structures, and error shapes for the workspace.
+  version: 1.0.0
+  contact:
+    name: API Architecture Team
+    email: api-architect@enterprise.com
+servers:
+  - url: https://api.staging.enterprise.com/v1
+    description: Staging Environment Gateway
+  - url: http://localhost:8080/v1
+    description: Local Development Server
+paths:
+  /users:
+    post:
+      summary: Register a new user profile
+      description: Validates input schemas, checks database constraints for email duplicates, and creates a user entity.
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User registered successfully.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Relative URL pointing to the newly created user profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Input validation failed or body syntax invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict. A user with the requested email already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{userId}:
+    get:
+      summary: Retrieve user profile details
+      description: Returns profile metadata for the requested user ID. Access is guarded by bearer JWT authorization tokens.
+      operationId: getUserById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The unique UUID representing the user profile.
+          schema:
+            type: string
+            format: uuid
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Authorization failed or Bearer token missing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: User lacks permission to view the requested profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User profile not found for the requested ID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Provide JWT authorization token in HTTP header as 'Authorization: Bearer <JWT>'."
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 8f4477c7-0e6d-4ee8-a6d1-e5d0f1b2c4e1
+        email:
+          type: string
+          format: email
+          example: engineer@antigravity.io
+        name:
+          type: string
+          example: Antigravity Architect
+        status:
+          type: string
+          enum: [PENDING, ACTIVE, SUSPENDED]
+          example: ACTIVE
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-07-06T15:27:00Z'
+
+    CreateUserRequest:
+      type: object
+      required:
+        - email
+        - name
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: dev@antigravity.io
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Jane Doe
+        password:
+          type: string
+          format: password
+          minLength: 12
+          maxLength: 128
+          example: s3cureP@ssword1!
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+        - timestamp
+      properties:
+        code:
+          type: string
+          example: VALIDATION_FAILED
+        message:
+          type: string
+          example: The provided registration body fails input schema validation checks.
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-07-06T15:27:01Z'
+        details:
+          type: array
+          items:
+            type: object
+            required:
+              - field
+              - issue
+            properties:
+              field:
+                type: string
+                example: password
+              issue:
+                type: string
+                example: Must contain at least 12 characters and 1 numerical character.
