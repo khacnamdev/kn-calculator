@@ -1,0 +1,6 @@
+- [x] Update `AGENTS.md` with AI Documentation Persistence rules
+- [x] Create `docs/ai` subdirectories in the repository
+- [x] Write implementation plan to repository `docs/ai/implement-plans/ai-documentation-persistence_20260710_230254.md`
+- [x] Write task list to repository `docs/ai/tasks/ai-documentation-persistence_20260710_230254.md`
+- [x] Write walkthrough to repository `docs/ai/walkthroughs/ai-documentation-persistence_20260710_230254.md`
+- [x] Verify persistence files and update status
