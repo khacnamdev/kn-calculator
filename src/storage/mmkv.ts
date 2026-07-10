@@ -1,10 +1,10 @@
-import { MMKV } from 'react-native-mmkv';
+import { createMMKV } from 'react-native-mmkv';
 import { StateStorage } from 'zustand/middleware';
 
 /**
  * MMKV instance for high-performance synchronous storage.
  */
-export const storage = new MMKV({
+export const storage = createMMKV({
   id: 'kn-calculator-storage',
 });
 
@@ -20,6 +20,6 @@ export const zustandStorage: StateStorage = {
     return value ?? null;
   },
   removeItem: (name: string) => {
-    storage.delete(name);
+    storage.remove(name);
   },
 };

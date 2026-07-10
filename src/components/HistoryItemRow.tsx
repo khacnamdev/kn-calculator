@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, Clipboard, ToastAndroid, Platform } from 'react-native';
+import { StyleSheet, Text, View, Pressable, ToastAndroid, Platform } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Card, useTheme, IconButton } from 'react-native-paper';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { HistoryItem } from '../types/calculator';
 import { formatExpression } from '../utils/formatter';
@@ -29,14 +30,14 @@ export function HistoryItemRow({
   const formattedExpr = formatExpression(item.expression, decimalSeparator, groupingSeparator);
 
   // Copy expression to clipboard
-  const copyExpression = () => {
-    Clipboard.setString(item.expression);
+  const copyExpression = async () => {
+    await Clipboard.setStringAsync(item.expression);
     notify('Expression copied!');
   };
 
   // Copy result to clipboard
-  const copyResult = () => {
-    Clipboard.setString(item.result);
+  const copyResult = async () => {
+    await Clipboard.setStringAsync(item.result);
     notify('Result copied!');
   };
 

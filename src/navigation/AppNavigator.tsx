@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { RootTabParamList } from './types';
 import { CalculatorScreen } from '../screens/CalculatorScreen';
@@ -19,7 +19,7 @@ export function AppNavigator() {
       initialRouteName="Calculator"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size, focused }) => {
-          let iconName = '';
+          let iconName: React.ComponentProps<typeof MaterialCommunityIcons>['name'] = 'help';
 
           switch (route.name) {
             case 'Calculator':

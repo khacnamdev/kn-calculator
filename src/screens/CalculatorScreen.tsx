@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, SafeAreaView, TextInput, Pressable, Vibration } from 'react-native';
+import { StyleSheet, View, TextInput, Pressable, Vibration } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 
