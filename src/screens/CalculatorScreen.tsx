@@ -17,6 +17,7 @@ import { useCalculatorStore } from '../store/calculatorStore';
 import { useExternalKeyboard } from '../hooks/useExternalKeyboard';
 import { formatExpression } from '../utils/formatter';
 import { HistoryItem } from '../types/calculator';
+import { useTranslation } from '../i18n/useTranslation';
 
 // ── iOS-style colour palette (always dark) ───────────────────────────────────
 const C = {
@@ -59,6 +60,7 @@ export function CalculatorScreen({ navigation }: any) {
   const result = useCalculatorStore((s) => s.result);
   const history = useCalculatorStore((s) => s.history);
   const settings = useCalculatorStore((s) => s.settings);
+  const t = useTranslation();
 
   const scrollRef = useRef<ScrollView>(null);
   const { inputRef, focusInput, handleKeyPress, handleTextChange } = useExternalKeyboard();
@@ -116,7 +118,7 @@ export function CalculatorScreen({ navigation }: any) {
           showsVerticalScrollIndicator={false}
         >
           {history.length === 0 ? (
-            <Text style={styles.historyEmpty}>No history yet</Text>
+            <Text style={styles.historyEmpty}>{t.historyEmpty}</Text>
           ) : (
             [...history].reverse().map((item) => (
               <HistoryRow key={item.id} item={item} />

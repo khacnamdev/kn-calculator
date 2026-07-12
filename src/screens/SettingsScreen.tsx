@@ -12,25 +12,22 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useCalculatorStore } from '../store/calculatorStore';
 import { Settings } from '../types/calculator';
+import { useTranslation } from '../i18n/useTranslation';
 
-// ── iOS dark palette (mirrors CalculatorScreen) ───────────────────────────────
+// ── iOS dark palette ──────────────────────────────────────────────────────────
 const C = {
   bg: '#000000',
   section: '#1C1C1E',
   border: '#38383A',
   text: '#FFFFFF',
   subtext: '#8E8E93',
-  accent: '#FF9F0A',   // orange, same as operator keys
-  danger: '#FF453A',
+  accent: '#FF9F0A',
   check: '#30D158',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface SectionProps {
-  title: string;
-  children: React.ReactNode;
-}
+interface SectionProps { title: string; children: React.ReactNode }
 function Section({ title, children }: SectionProps) {
   return (
     <View style={styles.section}>
@@ -125,6 +122,7 @@ function Stepper({ value, min, max, step, onChange, unit }: StepperProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function SettingsScreen() {
+  const t = useTranslation();
   const settings = useCalculatorStore((s) => s.settings);
   const updateSettings = useCalculatorStore((s) => s.updateSettings);
 
@@ -139,14 +137,28 @@ export function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
 
-        {/* Appearance */}
-        <Section title="Appearance">
+        {/* Language */}
+        <Section title={t.sectionLanguage}>
           <ChoiceRow
-            label="Theme"
+            label={t.language}
             options={[
-              { label: 'Light', value: 'light' },
-              { label: 'Dark', value: 'dark' },
-              { label: 'System', value: 'system' },
+              { label: t.langEnglish,    value: 'en' },
+              { label: t.langVietnamese, value: 'vi' },
+            ]}
+            value={settings.language}
+            onChange={(v) => set('language', v as 'en' | 'vi')}
+            last
+          />
+        </Section>
+
+        {/* Appearance */}
+        <Section title={t.sectionAppearance}>
+          <ChoiceRow
+            label={t.theme}
+            options={[
+              { label: t.themeLight,  value: 'light' },
+              { label: t.themeDark,   value: 'dark' },
+              { label: t.themeSystem, value: 'system' },
             ]}
             value={settings.theme}
             onChange={(v) => set('theme', v as any)}
@@ -155,12 +167,12 @@ export function SettingsScreen() {
         </Section>
 
         {/* Separators */}
-        <Section title="Separators & Formatting">
+        <Section title={t.sectionFormatting}>
           <ChoiceRow
-            label="Decimal"
+            label={t.decimalSeparator}
             options={[
-              { label: 'Dot (.)', value: '.' },
-              { label: 'Comma (,)', value: ',' },
+              { label: t.decimalDot,   value: '.' },
+              { label: t.decimalComma, value: ',' },
             ]}
             value={settings.decimalSeparator}
             onChange={(v) => {
@@ -172,12 +184,12 @@ export function SettingsScreen() {
             }}
           />
           <ChoiceRow
-            label="Thousands"
+            label={t.thousandsSeparator}
             options={[
-              { label: 'Comma', value: ',' },
-              { label: 'Dot', value: '.' },
-              { label: 'Space', value: ' ' },
-              { label: 'None', value: 'none' },
+              { label: t.thousandsComma, value: ',' },
+              { label: t.thousandsDot,   value: '.' },
+              { label: t.thousandsSpace, value: ' ' },
+              { label: t.thousandsNone,  value: 'none' },
             ]}
             value={settings.groupingSeparator}
             onChange={(v) => {
@@ -188,21 +200,21 @@ export function SettingsScreen() {
               updateSettings({ decimalSeparator: newDec, groupingSeparator: newGroup });
             }}
           />
-          <Row label="Decimal Precision" last>
+          <Row label={t.decimalPrecision} last>
             <Stepper
               value={settings.precision}
               min={4}
               max={15}
               step={1}
-              unit="digits"
+              unit={t.unitDigits}
               onChange={(v) => set('precision', v)}
             />
           </Row>
         </Section>
 
         {/* History */}
-        <Section title="History">
-          <Row label="Auto-Save Calculations">
+        <Section title={t.sectionHistory}>
+          <Row label={t.autoSave}>
             <Switch
               value={settings.autoSaveHistory}
               onValueChange={(v) => set('autoSaveHistory', v)}
@@ -210,21 +222,21 @@ export function SettingsScreen() {
               thumbColor={C.text}
             />
           </Row>
-          <Row label="History Limit" last>
+          <Row label={t.historyLimit} last>
             <Stepper
               value={settings.historyLimit}
               min={10}
               max={500}
               step={10}
-              unit="items"
+              unit={t.unitItems}
               onChange={(v) => set('historyLimit', v)}
             />
           </Row>
         </Section>
 
         {/* Feedback */}
-        <Section title="Keypad Feedback">
-          <Row label="Vibrate on Keypress">
+        <Section title={t.sectionFeedback}>
+          <Row label={t.vibrate}>
             <Switch
               value={settings.vibration}
               onValueChange={(v) => set('vibration', v)}
@@ -232,7 +244,7 @@ export function SettingsScreen() {
               thumbColor={C.text}
             />
           </Row>
-          <Row label="Audible Key Clicks" sublabel="Uses default system click sound" last>
+          <Row label={t.sound} sublabel={t.soundSub} last>
             <Switch
               value={settings.sound}
               onValueChange={(v) => set('sound', v)}
@@ -250,22 +262,11 @@ export function SettingsScreen() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: C.bg,
-  },
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    paddingBottom: 40,
-  },
+  safe: { flex: 1, backgroundColor: C.bg },
+  scroll: { flex: 1 },
+  content: { paddingBottom: 40 },
 
-  // ── Section ─────────────────────────────────────────────
-  section: {
-    marginTop: 28,
-    paddingHorizontal: 16,
-  },
+  section: { marginTop: 28, paddingHorizontal: 16 },
   sectionTitle: {
     color: C.subtext,
     fontSize: 12,
@@ -274,13 +275,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginLeft: 4,
   },
-  sectionBox: {
-    backgroundColor: C.section,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
+  sectionBox: { backgroundColor: C.section, borderRadius: 12, overflow: 'hidden' },
 
-  // ── Row ─────────────────────────────────────────────────
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -289,38 +285,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     minHeight: 50,
   },
-  rowBorder: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: C.border,
-  },
-  rowLabel: {
-    flex: 1,
-    marginRight: 12,
-  },
-  rowText: {
-    color: C.text,
-    fontSize: 15,
-  },
-  rowSubtext: {
-    color: C.subtext,
-    fontSize: 12,
-    marginTop: 2,
-  },
-  rowControl: {
-    alignItems: 'flex-end',
-  },
+  rowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  rowLabel: { flex: 1, marginRight: 12 },
+  rowText: { color: C.text, fontSize: 15 },
+  rowSubtext: { color: C.subtext, fontSize: 12, marginTop: 2 },
+  rowControl: { alignItems: 'flex-end' },
 
-  // ── Choice (chip) Row ────────────────────────────────────
-  choiceRow: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginTop: 10,
-  },
+  choiceRow: { paddingHorizontal: 16, paddingVertical: 12 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
   chip: {
     paddingHorizontal: 14,
     paddingVertical: 6,
@@ -329,26 +301,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: C.border,
   },
-  chipActive: {
-    backgroundColor: C.accent,
-    borderColor: C.accent,
-  },
-  chipText: {
-    color: C.subtext,
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  chipTextActive: {
-    color: '#000000',
-    fontWeight: '700',
-  },
+  chipActive: { backgroundColor: C.accent, borderColor: C.accent },
+  chipText: { color: C.subtext, fontSize: 13, fontWeight: '500' },
+  chipTextActive: { color: '#000000', fontWeight: '700' },
 
-  // ── Stepper ──────────────────────────────────────────────
-  stepper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   stepBtn: {
     width: 32,
     height: 32,
@@ -357,14 +314,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  stepBtnDisabled: {
-    opacity: 0.4,
-  },
-  stepValue: {
-    color: C.text,
-    fontSize: 14,
-    fontWeight: '500',
-    minWidth: 64,
-    textAlign: 'center',
-  },
+  stepBtnDisabled: { opacity: 0.4 },
+  stepValue: { color: C.text, fontSize: 14, fontWeight: '500', minWidth: 70, textAlign: 'center' },
 });

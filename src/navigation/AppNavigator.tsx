@@ -4,10 +4,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { RootTabParamList } from './types';
 import { CalculatorScreen } from '../screens/CalculatorScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { useTranslation } from '../i18n/useTranslation';
 
 const Stack = createStackNavigator<RootTabParamList>();
 
 export function AppNavigator() {
+  const t = useTranslation();
+
   return (
     <Stack.Navigator
       initialRouteName="Calculator"
@@ -22,7 +25,7 @@ export function AppNavigator() {
         component={SettingsScreen}
         options={{
           headerShown: true,
-          title: 'Settings',
+          title: t.settings,
           headerStyle: {
             backgroundColor: '#1C1C1E',
             shadowColor: 'transparent',
