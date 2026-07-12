@@ -1,0 +1,166 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GitHub Labels definition for kn-calculator
+#
+# Managed by: .github/workflows/labels.yml (EndBug/label-sync)
+# Sync command: workflow_dispatch  OR  push of this file to main
+#
+# Color palette philosophy:
+#   Type     → blue/cyan/grey family
+#   Priority → traffic-light red → orange → yellow → green
+#   Status   → purple/rose family
+#   Platform → brand colors
+#   Area     → amber/warm family
+#   Community→ indigo/teal
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Type ─────────────────────────────────────────────────────────────────────
+
+- name: bug
+  color: "D73A4A"
+  description: "Something isn't working correctly"
+
+- name: enhancement
+  color: "A2EEEF"
+  description: "Improvement to an existing feature"
+
+- name: feature
+  color: "0075CA"
+  description: "Brand-new feature or capability"
+
+- name: documentation
+  color: "0052CC"
+  description: "Improvements or additions to documentation"
+
+- name: refactor
+  color: "E4E669"
+  description: "Code change that neither fixes a bug nor adds a feature"
+
+- name: chore
+  color: "CFD3D7"
+  description: "Maintenance tasks, tooling, or config updates"
+
+- name: ci
+  color: "1D76DB"
+  description: "Changes to GitHub Actions or CI/CD configuration"
+
+- name: dependencies
+  color: "0366D6"
+  description: "Dependency update (npm / GitHub Actions)"
+
+- name: performance
+  color: "F9D0C4"
+  description: "Fixes or improvements related to performance or bundle size"
+
+- name: security
+  color: "B60205"
+  description: "Security vulnerability or hardening change"
+
+- name: test
+  color: "BFD4F2"
+  description: "Adding or updating tests (unit, integration, e2e)"
+
+# ── Priority ─────────────────────────────────────────────────────────────────
+
+- name: "priority: critical"
+  color: "B60205"
+  description: "Must be resolved immediately — production is broken"
+
+- name: "priority: high"
+  color: "D93F0B"
+  description: "Should be addressed in the current sprint"
+
+- name: "priority: medium"
+  color: "FBCA04"
+  description: "Important but not immediately urgent"
+
+- name: "priority: low"
+  color: "0E8A16"
+  description: "Nice to have — address when capacity allows"
+
+# ── Status ───────────────────────────────────────────────────────────────────
+
+- name: "status: blocked"
+  color: "E11D48"
+  description: "Cannot progress — waiting on external dependency or decision"
+
+- name: "status: in progress"
+  color: "7057FF"
+  description: "Actively being worked on"
+
+- name: "status: ready"
+  color: "2EA043"
+  description: "Scoped and ready for implementation"
+
+- name: "status: review"
+  color: "A855F7"
+  description: "Implementation complete — awaiting code review"
+
+- name: "status: duplicate"
+  color: "CFD3D7"
+  description: "This issue or PR already exists"
+
+- name: "status: wontfix"
+  color: "EEEEEE"
+  description: "Acknowledged but will not be addressed"
+
+# ── Platform ─────────────────────────────────────────────────────────────────
+
+- name: android
+  color: "3DDC84"
+  description: "Affects Android platform only"
+
+- name: ios
+  color: "007AFF"
+  description: "Affects iOS platform only"
+
+- name: expo
+  color: "4630EB"
+  description: "Expo SDK or Expo Go specific behaviour"
+
+- name: react-native
+  color: "61DAFB"
+  description: "React Native core or bridging layer concern"
+
+# ── Area ─────────────────────────────────────────────────────────────────────
+
+- name: ui
+  color: "FF6B6B"
+  description: "UI components, layout, or visual design"
+
+- name: navigation
+  color: "FFA07A"
+  description: "React Navigation configuration or screen transitions"
+
+- name: state-management
+  color: "FFD700"
+  description: "Zustand store, selectors, or persistence layer"
+
+- name: authentication
+  color: "FF69B4"
+  description: "Auth flows, tokens, or session handling"
+
+- name: networking
+  color: "DDA0DD"
+  description: "API calls, HTTP client, or network error handling"
+
+- name: storage
+  color: "9370DB"
+  description: "AsyncStorage, MMKV, or on-device persistence"
+
+- name: build
+  color: "708090"
+  description: "Build tooling — Metro, Babel, Expo Config, EAS"
+
+- name: release
+  color: "4682B4"
+  description: "Release process, versioning, or deployment"
+
+# ── Community ────────────────────────────────────────────────────────────────
+
+- name: "good first issue"
+  color: "7057FF"
+  description: "Good starting point for first-time contributors"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention or outside help needed"

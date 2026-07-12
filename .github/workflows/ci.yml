@@ -1,0 +1,67 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI — Runs on every PR and on pushes to main / develop
+#
+# Detected project characteristics:
+#   • Package manager : pnpm 11.x  (lockfileVersion 9)
+#   • Runtime         : Node 22 LTS
+#   • Framework       : Expo (managed workflow, SDK ~54)
+#   • Available scripts: lint · typecheck · test
+#   • No build / test:coverage scripts — those steps are skipped.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  push:
+    branches: [main, develop]
+
+# Cancel in-flight runs for the same ref so new pushes don't queue behind old ones
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  PNPM_VERSION: "11"
+
+jobs:
+  ci:
+    name: Install, Lint, Typecheck & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Setup pnpm (must be before setup-node so caching works) ─────────────
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      # ── Setup Node with pnpm store cache ────────────────────────────────────
+      - name: Setup Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      # ── Install dependencies (frozen lockfile — no surprise upgrades) ────────
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── Lint ─────────────────────────────────────────────────────────────────
+      - name: Lint (expo lint / ESLint)
+        run: pnpm run lint
+
+      # ── Type-check ───────────────────────────────────────────────────────────
+      - name: Type-check (tsc --noEmit)
+        run: pnpm run typecheck
+
+      # ── Unit tests ───────────────────────────────────────────────────────────
+      - name: Run tests (jest)
+        run: pnpm test -- --passWithNoTests --ci

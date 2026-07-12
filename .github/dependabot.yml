@@ -1,0 +1,64 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dependabot configuration
+#
+# • npm (pnpm) — weekly on Mondays
+# • github-actions      — weekly on Mondays
+#
+# Minor / patch updates are grouped together to reduce PR noise.
+# Major updates always come as individual PRs for careful review.
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: 2
+
+updates:
+  # ── JavaScript / npm (pnpm) packages ──────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Ho_Chi_Minh"
+    open-pull-requests-limit: 10
+    # Group minor and patch bumps into a single PR to keep the queue clean
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    # Label every Dependabot PR for easy filtering
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    ignore:
+      # Expo packages must be upgraded together via `npx expo install --fix`
+      # Dependabot should NOT independently bump these.
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "react-native"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+
+  # ── GitHub Actions ────────────────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Ho_Chi_Minh"
+    open-pull-requests-limit: 5
+    groups:
+      actions-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
