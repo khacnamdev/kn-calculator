@@ -1,0 +1,52 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Typecheck — Dedicated TypeScript type-checking workflow (tsc --noEmit)
+#
+# Runs on:
+#   • Every PR targeting main / develop / staging
+#   • Direct pushes to main / develop
+#
+# Kept separate so type errors surface as a distinct PR status check.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Typecheck
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+  PNPM_VERSION: "11"
+
+jobs:
+  typecheck:
+    name: TypeScript (tsc --noEmit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript type-check
+        run: pnpm run typecheck

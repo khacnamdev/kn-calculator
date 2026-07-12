@@ -15,6 +15,7 @@ export interface Settings {
   sound: boolean;
   autoSaveHistory: boolean;
   historyLimit: number;
+  language: 'en' | 'vi';
 }
 
 export interface CalculatorState {

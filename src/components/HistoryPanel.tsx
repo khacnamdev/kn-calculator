@@ -6,10 +6,9 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useCalculatorStore } from '../store/calculatorStore';
 import { HistoryItemRow } from './HistoryItemRow';
@@ -48,7 +47,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
       translateX.value = withSpring(SCREEN_WIDTH, { damping: 20, stiffness: 120 });
       opacity.value = withTiming(0, { duration: 200 });
     }
-  }, [isOpen]);
+  }, [isOpen, opacity, translateX]);
 
   const closePanel = () => {
     onClose();
@@ -86,7 +85,7 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
   }
 
   return (
-    <View style={StyleSheet.absoluteFillObject}>
+    <View style={StyleSheet.absoluteFill}>
       {/* Backdrop Background */}
       <Animated.View style={[styles.backdrop, backdropAnimatedStyle]}>
         <Pressable style={styles.backdropPressable} onPress={closePanel} />
@@ -152,7 +151,6 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
           <FlashList
             data={filteredHistory}
             keyExtractor={(item) => item.id}
-            estimatedItemSize={94}
             renderItem={({ item }) => (
               <HistoryItemRow
                 item={item}
@@ -179,7 +177,11 @@ export function HistoryPanel({ isOpen, onClose }: HistoryPanelProps) {
 
 const styles = StyleSheet.create({
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     backgroundColor: '#000',
   },
   backdropPressable: {

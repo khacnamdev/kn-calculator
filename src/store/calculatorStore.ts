@@ -36,6 +36,7 @@ const DEFAULT_SETTINGS: Settings = {
   sound: false,
   autoSaveHistory: true,
   historyLimit: 100,
+  language: 'en',
 };
 
 const parser = new Parser();

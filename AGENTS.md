@@ -48,7 +48,7 @@ Agents must use the following standard practices to locate code assets and docum
 *   **Domain Schemas / Types**: Look inside `src/types/` or database schemas under `db/` or `prisma/schema.prisma` to verify data models.
 
 ### Documentation Mapping:
-*   **System Design & Architecture**: Read [system-overview.md](file:///home/namnk/ws/github/antigravity-enterprise-template/docs/architecture/system-overview.md) for architectural structures.
+*   **System Design & Architecture**: Read [system-overview.md](file:///home/namnk/ws/github/kn-calculator/docs/architecture/system-overview.md) for architectural structures.
 *   **Design Shift Logs (ADRs)**: Scan `docs/decisions/` for existing Architecture Decision Records before designing new subsystems.
 *   **API Contracts**: Read `docs/openapi/` to inspect active RESTful contracts before writing endpoints.
 
@@ -60,6 +60,32 @@ Before performing specific tasks, you must load the matching operational rule fr
 
 | Active Task | Rule File to Load | Path |
 | :--- | :--- | :--- |
-| Writing Code, Refactoring, Creating Classes | **Coding Standards** | [.agent/rules/coding.md](file:///home/namnk/ws/github/antigravity-enterprise-template/.agent/rules/coding.md) |
-| Committing, Branching, PR Creation | **Git & PR Workflows** | [.agent/rules/git.md](file:///home/namnk/ws/github/antigravity-enterprise-template/.agent/rules/git.md) |
-| Handling user input, tokens, credentials, PII | **Zero-Trust Security** | [.agent/rules/security.md](file:///home/namnk/ws/github/antigravity-enterprise-template/.agent/rules/security.md) |
+| Writing Code, Refactoring, Creating Classes | **Coding Standards** | [.agent/rules/coding.md](file:///home/namnk/ws/github/kn-calculator/.agent/rules/coding.md) |
+| Committing, Branching, PR Creation | **Git & PR Workflows** | [.agent/rules/git.md](file:///home/namnk/ws/github/kn-calculator/.agent/rules/git.md) |
+| Handling user input, tokens, credentials, PII | **Zero-Trust Security** | [.agent/rules/security.md](file:///home/namnk/ws/github/kn-calculator/.agent/rules/security.md) |
+
+---
+
+## 5. AI Documentation Persistence
+
+For every implementation request that requires planning or execution, always persist the generated artifacts into the repository.
+
+### Output Directories:
+*   **Implementation Plans**: `docs/ai/implement-plans/`
+*   **Task Lists**: `docs/ai/tasks/`
+*   **Walkthroughs**: `docs/ai/walkthroughs/`
+
+### Required Files:
+For a feature named `<feature-name>`, create or update:
+*   [implement-plans/<feature-name>.md](file:///home/namnk/ws/github/kn-calculator/docs/ai/implement-plans/<feature-name>.md)
+*   [tasks/<feature-name>.md](file:///home/namnk/ws/github/kn-calculator/docs/ai/tasks/<feature-name>.md)
+*   [walkthroughs/<feature-name>.md](file:///home/namnk/ws/github/kn-calculator/docs/ai/walkthroughs/<feature-name>.md)
+
+### Rules & Behaviors:
+1.  **Always create these files** if they do not exist.
+2.  **Always update the existing files** instead of creating duplicates.
+3.  **Keep the conversation concise**; the repository files are the source of truth.
+4.  **Update the task list** as work progresses.
+5.  **Update the walkthrough** whenever implementation changes.
+6.  **Do not leave implementation plans, task lists, or walkthroughs only in the chat**.
+7.  **If work is interrupted**, ensure the repository reflects the latest progress.

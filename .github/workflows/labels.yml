@@ -1,0 +1,59 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Labels Sync Workflow
+#
+# Synchronizes GitHub Labels with .github/labels.yml using EndBug/label-sync.
+#
+# Triggers:
+#   • Manual:    Actions → Labels → Run workflow
+#   • Automatic: Any push to main that modifies .github/labels.yml
+#
+# Behaviour:
+#   • Creates labels that exist in labels.yml but not on GitHub.
+#   • Updates color/description of labels whose definition changed.
+#   • DELETES labels on GitHub that are NOT present in labels.yml.
+#     (This keeps the repo labels in sync with the source of truth.)
+#
+# Required permission:
+#   The GITHUB_TOKEN must have `issues: write` scope.
+#   For public repos the default GITHUB_TOKEN is sufficient.
+#   For private repos, confirm the org allows this permission.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Labels
+
+on:
+  # Allow manual trigger from the Actions UI
+  workflow_dispatch:
+
+  # Auto-sync whenever the label definitions file changes on main
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/labels.yml"
+
+permissions:
+  issues: write    # Required to create / update / delete labels
+  contents: read   # Required to check out the repository
+
+jobs:
+  sync-labels:
+    name: Sync labels → GitHub
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # ── Checkout so the labels.yml file is available ─────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Sync labels using EndBug/label-sync ──────────────────────────────────
+      # Docs: https://github.com/EndBug/label-sync
+      # `delete-other-labels: true` removes any label on GitHub that is NOT
+      # listed in labels.yml, keeping the repository clean.
+      - name: Sync labels
+        uses: EndBug/label-sync@v2
+        with:
+          config-file: .github/labels.yml
+          delete-other-labels: true
+          token: ${{ secrets.GITHUB_TOKEN }}

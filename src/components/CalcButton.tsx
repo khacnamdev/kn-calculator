@@ -6,7 +6,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useTheme } from 'react-native-paper';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { CalcButtonInfo } from '../types/calculator';
 import { useCalculatorStore } from '../store/calculatorStore';
@@ -128,7 +128,7 @@ export function CalcButton({
     >
       {button.icon ? (
         <MaterialCommunityIcons
-          name={button.icon}
+          name={button.icon as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
           size={24}
           color={textColor}
         />
