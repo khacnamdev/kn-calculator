@@ -1,14 +1,12 @@
-# Walkthrough - Display Operator Spacing & Font Weight Refinement
+# Walkthrough - Expanded Keypad Buttons via Spacing Adjustment
 
-We have adjusted and refined display styles for expressions:
+We have adjusted the layout parameters of the keypad to increase the tap targets:
 
-1. **Closer Operator Spacing:**
-   - Modified `formatExpression` inside [formatter.ts](file:///home/namnk/ws/github/kn-calculator/src/utils/formatter.ts) to format expressions without spaces around operators (e.g. `36+36` instead of `36 + 36`).
-   - This aligns the active typing and final expression displays with the non-spaced spacing structure of history list rows.
-
-2. **Thinner Expression Font Weight:**
-   - Set the font weight of the active expression to `'500'` (thinner) inside [CalculatorScreen.tsx](file:///home/namnk/ws/github/kn-calculator/src/screens/CalculatorScreen.tsx) and [ExpressionFontSizeScreen.tsx](file:///home/namnk/ws/github/kn-calculator/src/screens/ExpressionFontSizeScreen.tsx).
-   - The result (`72`) remains `'bold'` (`'700'`), creating a clear visual contrast and hierarchy.
+1. **Reduced Spacing & Larger Buttons:**
+   - Reduced the keypad container's horizontal padding from `16` to `8` inside [CalculatorScreen.tsx](file:///home/namnk/ws/github/kn-calculator/src/screens/CalculatorScreen.tsx).
+   - Reduced the gap between keys within rows and between keypad rows from `8` to `4` (using `gap: 4`).
+   - Recalculated the `BTN_SIZE` constant dynamically: `const BTN_SIZE = (Dimensions.get("window").width - 8 * 2 - 4 * 4) / 5;`. This leverages the saved padding and gap spaces to increase the diameter of the circular buttons (e.g. from `65.2`px to `71.6`px on standard 390px screens).
+   - Updated double-width (`btnWide`) and double-height (`btnTall`) button calculations to use the new gap size: `BTN_SIZE * 2 + 4`.
 
 ---
 

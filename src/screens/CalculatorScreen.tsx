@@ -442,8 +442,8 @@ function IosButton({
 }: IosButtonProps) {
   const settings = useCalculatorStore((s) => s.settings);
   const isElder = settings.elderMode;
-  const buttonFontSize = isElder ? 36 : 32;
-  const iconSize = isElder ? 30 : 28;
+  const buttonFontSize = isElder ? 60 : 68;
+  const iconSize = isElder ? 46 : 44;
 
   return (
     <Pressable
@@ -465,8 +465,10 @@ function IosButton({
         <Text
           style={[
             styles.btnText,
-            { color: fg, fontSize: buttonFontSize, fontWeight: "bold" },
+            { color: fg, fontSize: buttonFontSize, fontWeight: "500" },
           ]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
         >
           {label}
         </Text>
@@ -477,7 +479,7 @@ function IosButton({
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BTN_SIZE = (Dimensions.get("window").width - 16 * 2 - 8 * 4) / 5; // 5 cols
+const BTN_SIZE = (Dimensions.get("window").width - 8 * 2 - 4 * 4) / 5; // 5 cols
 
 const styles = StyleSheet.create({
   safe: {
@@ -548,13 +550,13 @@ const styles = StyleSheet.create({
 
   // ── Keypad ───────────────────────────────────────────────
   keypad: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingBottom: 8,
-    gap: 8,
+    gap: 4,
   },
   row: {
     flexDirection: "row",
-    gap: 8,
+    gap: 4,
     height: BTN_SIZE,
   },
 
@@ -567,13 +569,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   btnWide: {
-    width: BTN_SIZE * 2 + 8,
+    width: BTN_SIZE * 2 + 4,
     borderRadius: BTN_SIZE / 2,
     alignItems: "flex-start",
     paddingLeft: BTN_SIZE * 0.38,
   },
   btnTall: {
-    height: BTN_SIZE * 2 + 8,
+    height: BTN_SIZE * 2 + 4,
     borderRadius: BTN_SIZE / 2,
     position: "absolute",
     right: 0,
