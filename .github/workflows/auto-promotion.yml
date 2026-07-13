@@ -49,40 +49,44 @@ jobs:
       - name: Check if PR already exists
         id: check
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
 
-          API="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&head=${GITHUB_REPOSITORY%/*}:${HEAD}&base=${BASE}"
-
-          RESPONSE=$(curl -fsSL \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "$API")
-
-          COUNT=$(echo "$RESPONSE" | jq 'length')
+          COUNT=$(gh pr list \
+            --state open \
+            --head "${HEAD}" \
+            --base "${BASE}" \
+            --json number \
+            --jq 'length')
 
           echo "count=$COUNT" >> "$GITHUB_OUTPUT"
 
       - name: Create promotion PR
         if: ${{ steps.check.outputs.count == '0' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
 
-          curl -fsSL \
-            -X POST \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls" \
-            -d @- <<EOF
-          {
-            "title": "chore(release): promote ${HEAD} → ${BASE}",
-            "head": "${HEAD}",
-            "base": "${BASE}",
-            "body": "## 🚀 Automatic Promotion\n\nThis Pull Request was created automatically.\n\n### Promotion\n- **Source:** \`${HEAD}\`\n- **Target:** \`${BASE}\`\n\n### Checklist\n- [ ] CI passed\n- [ ] Code reviewed\n- [ ] Ready to merge\n\n---\nGenerated automatically by GitHub Actions."
-          }
-          EOF
+          gh pr create \
+            --title "chore(release): promote ${HEAD} → ${BASE}" \
+            --head "${HEAD}" \
+            --base "${BASE}" \
+            --body "## 🚀 Automatic Promotion
+
+          This Pull Request was created automatically.
+
+          ### Promotion
+          - **Source:** \`${HEAD}\`
+          - **Target:** \`${BASE}\`
+
+          ### Checklist
+          - [ ] CI passed
+          - [ ] Code reviewed
+          - [ ] Ready to merge
+
+          ---
+          Generated automatically by GitHub Actions."
