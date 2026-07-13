@@ -38,13 +38,22 @@ const C = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function HistoryRow({ item }: { item: HistoryItem }) {
+function HistoryRow({ item, fontSize, isElder }: { item: HistoryItem; fontSize?: number; isElder?: boolean }) {
   const expr = item.expression.replace(/\*/g, '×').replace(/\//g, '÷').replace(/-/g, '−').replace(/\+/g, '+');
+  const size = fontSize || 20;
   return (
     <View style={styles.historyRow}>
-      <Text style={styles.historyText} numberOfLines={2} adjustsFontSizeToFit>
-        <Text style={styles.historyExpr}>{expr}=</Text>
-        <Text style={styles.historyResultText}>{item.result}</Text>
+      <Text
+        style={[
+          styles.historyText,
+          { fontSize: size },
+          isElder && { fontWeight: 'bold' }
+        ]}
+        numberOfLines={2}
+        adjustsFontSizeToFit
+      >
+        <Text style={[styles.historyExpr, isElder && { fontWeight: 'bold' }]}>{expr}=</Text>
+        <Text style={[styles.historyResultText, isElder && { fontWeight: 'bold' }]}>{item.result}</Text>
       </Text>
     </View>
   );
@@ -110,40 +119,75 @@ export function CalculatorScreen({ navigation }: any) {
 
       <Pressable style={styles.root} onPress={focusInput}>
 
-        {/* ── HISTORY AREA (scrollable, fills available space) ── */}
-        <ScrollView
-          ref={scrollRef}
-          style={styles.historyScroll}
-          contentContainerStyle={styles.historyContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {history.length === 0 ? (
-            <Text style={styles.historyEmpty}>{t.historyEmpty}</Text>
-          ) : (
-            [...history].reverse().map((item) => (
-              <HistoryRow key={item.id} item={item} />
-            ))
-          )}
-        </ScrollView>
+        {/* ── HISTORY AREA (unscrolled vs scrollable) ── */}
+        {settings.elderMode ? (
+          <View style={[styles.historyScroll, { justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: 8 }]}>
+            {history.length === 0 ? (
+              <Text style={[styles.historyEmpty, { fontSize: settings.historyFontSize }]}>{t.historyEmpty}</Text>
+            ) : (
+              history.slice(0, 2).reverse().map((item) => (
+                <HistoryRow key={item.id} item={item} fontSize={settings.historyFontSize} isElder />
+              ))
+            )}
+          </View>
+        ) : (
+          <ScrollView
+            ref={scrollRef}
+            style={styles.historyScroll}
+            contentContainerStyle={styles.historyContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {history.length === 0 ? (
+              <Text style={styles.historyEmpty}>{t.historyEmpty}</Text>
+            ) : (
+              [...history].reverse().map((item) => (
+                <HistoryRow
+                  key={item.id}
+                  item={item}
+                  fontSize={settings.historyFontSize}
+                  isElder={false}
+                />
+              ))
+            )}
+          </ScrollView>
+        )}
 
         {/* ── CURRENT DISPLAY ── */}
         <View style={styles.displayArea}>
+          <Text
+            style={[
+              styles.displayResult,
+              {
+                fontSize: !result ? (settings.elderMode ? 72 : 50) : (settings.elderMode ? 48 : 36),
+                fontWeight: 'bold',
+                color: '#FFFFFF',
+                lineHeight: !result ? (settings.elderMode ? 80 : 58) : (settings.elderMode ? 56 : 42),
+              }
+            ]}
+            numberOfLines={!result ? 5 : 1}
+            adjustsFontSizeToFit
+            minimumFontScale={!result ? (settings.elderMode ? 52 / 72 : 40 / 50) : undefined}
+          >
+            {showBig}
+          </Text>
           {showSmall ? (
             <Text
-              style={styles.displayExpr}
-              numberOfLines={2}
+              style={[
+                styles.displayExpr,
+                {
+                  fontSize: settings.elderMode ? 72 : 50,
+                  fontWeight: 'bold',
+                  color: '#FFFFFF',
+                  lineHeight: settings.elderMode ? 80 : 58,
+                }
+              ]}
+              numberOfLines={5}
               adjustsFontSizeToFit
+              minimumFontScale={settings.elderMode ? 52 / 72 : 40 / 50}
             >
               {showSmall}
             </Text>
           ) : null}
-          <Text
-            style={styles.displayResult}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-          >
-            {showBig}
-          </Text>
         </View>
 
         {/* ── KEYPAD ── */}
@@ -222,6 +266,11 @@ interface IosButtonProps {
 }
 
 function IosButton({ label, bg, fg, onPress, onLongPress, icon, wide, tall }: IosButtonProps) {
+  const settings = useCalculatorStore((s) => s.settings);
+  const isElder = settings.elderMode;
+  const buttonFontSize = isElder ? 36 : 32;
+  const iconSize = isElder ? 30 : 28;
+
   return (
     <Pressable
       onPress={onPress}
@@ -239,11 +288,18 @@ function IosButton({ label, bg, fg, onPress, onLongPress, icon, wide, tall }: Io
       {icon ? (
         <MaterialCommunityIcons
           name={icon as any}
-          size={22}
+          size={iconSize}
           color={fg}
         />
       ) : (
-        <Text style={[styles.btnText, { color: fg }]}>{label}</Text>
+        <Text
+          style={[
+            styles.btnText,
+            { color: fg, fontSize: buttonFontSize, fontWeight: 'bold' }
+          ]}
+        >
+          {label}
+        </Text>
       )}
     </Pressable>
   );

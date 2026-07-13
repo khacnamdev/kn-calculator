@@ -37,6 +37,8 @@ const DEFAULT_SETTINGS: Settings = {
   autoSaveHistory: true,
   historyLimit: 100,
   language: 'en',
+  elderMode: true,
+  historyFontSize: 24,
 };
 
 const parser = new Parser();

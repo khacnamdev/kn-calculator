@@ -43,6 +43,11 @@ export type TranslationKeys = {
   autoSave: string;
   historyLimit: string;
   unitItems: string;
+  historyFontSize: string;
+
+  // Appearance
+  elderMode: string;
+  elderModeSub: string;
 
   // Feedback
   vibrate: string;
@@ -51,6 +56,9 @@ export type TranslationKeys = {
 
   // ── Calculator screen ───────────────────────────────────────
   historyEmpty: string;
+  historyTitle: string;
+  increaseFontSize: string;
+  decreaseFontSize: string;
 };
 
 const en: TranslationKeys = {
@@ -85,12 +93,18 @@ const en: TranslationKeys = {
   autoSave: 'Auto-Save Calculations',
   historyLimit: 'History Limit',
   unitItems: 'items',
+  historyFontSize: 'History Font Size',
 
   vibrate: 'Vibrate on Keypress',
   sound: 'Audible Key Clicks',
   soundSub: 'Uses default system click sound',
 
   historyEmpty: 'No history yet',
+  historyTitle: 'History',
+  increaseFontSize: 'Increase font size',
+  decreaseFontSize: 'Decrease font size',
+  elderMode: 'Elder Friendly Mode',
+  elderModeSub: 'Larger text, bold buttons, and unscrolled history list',
 };
 
 const vi: TranslationKeys = {
@@ -125,12 +139,18 @@ const vi: TranslationKeys = {
   autoSave: 'Tự động lưu phép tính',
   historyLimit: 'Giới hạn lịch sử',
   unitItems: 'mục',
+  historyFontSize: 'Cỡ chữ lịch sử',
 
   vibrate: 'Rung khi nhấn phím',
   sound: 'Âm thanh phím',
   soundSub: 'Dùng âm thanh nhấn mặc định của hệ thống',
 
   historyEmpty: 'Chưa có lịch sử',
+  historyTitle: 'Lịch sử',
+  increaseFontSize: 'Tăng cỡ chữ',
+  decreaseFontSize: 'Giảm cỡ chữ',
+  elderMode: 'Chế độ người cao tuổi',
+  elderModeSub: 'Chữ lớn hơn, nút đậm và lịch sử không cuộn',
 };
 
 export const translations: Record<Language, TranslationKeys> = { en, vi };

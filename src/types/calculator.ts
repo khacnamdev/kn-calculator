@@ -16,6 +16,8 @@ export interface Settings {
   autoSaveHistory: boolean;
   historyLimit: number;
   language: 'en' | 'vi';
+  elderMode: boolean;
+  historyFontSize: number;
 }
 
 export interface CalculatorState {
