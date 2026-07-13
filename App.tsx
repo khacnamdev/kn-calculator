@@ -1,12 +1,12 @@
-import 'react-native-gesture-handler'; // Required to be imported first
 import React from 'react';
 import { useColorScheme, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AppNavigator } from './src/navigation/AppNavigator';
-import { CombinedLightTheme, CombinedDarkTheme } from './src/theme/theme';
+import { PaperLightTheme, PaperDarkTheme, NavigationLightTheme, NavigationDarkTheme } from './src/theme/theme';
 import { useCalculatorStore } from './src/store/calculatorStore';
 
 export default function App() {
@@ -17,15 +17,18 @@ export default function App() {
   const isDarkMode =
     themeSetting === 'dark' || (themeSetting === 'system' && systemScheme === 'dark');
 
-  const theme = isDarkMode ? CombinedDarkTheme : CombinedLightTheme;
+  const paperTheme = isDarkMode ? PaperDarkTheme : PaperLightTheme;
+  const navigationTheme = isDarkMode ? NavigationDarkTheme : NavigationLightTheme;
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <PaperProvider theme={theme}>
-        <NavigationContainer theme={theme}>
-          <AppNavigator />
-        </NavigationContainer>
-      </PaperProvider>
+      <SafeAreaProvider>
+        <PaperProvider theme={paperTheme}>
+          <NavigationContainer theme={navigationTheme}>
+            <AppNavigator />
+          </NavigationContainer>
+        </PaperProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

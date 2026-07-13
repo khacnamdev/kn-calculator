@@ -1,0 +1,113 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Release — Triggered when a semver tag is pushed  (e.g. v1.0.0)
+#
+# This project uses Expo managed workflow. Native binaries (.apk / .ipa) are
+# produced by EAS Build (Expo Application Services), NOT by this workflow.
+# ─────────────────────────────────────────────────────────────────────────────
+# What this workflow does:
+#   1. Checkout at the tagged commit.
+#   2. Install dependencies with frozen lockfile.
+#   3. Run lint + typecheck as release-gate quality checks.
+#   4. Run unit tests.
+#   5. Generate a changelog from git log since the previous tag.
+#   6. Create a GitHub Release with the changelog as body.
+#      (No native binaries are uploaded — use EAS Build for those.)
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"      # matches v1.0.0, v2.3.14, etc.
+      - "v[0-9]+.[0-9]+.[0-9]+-*"    # matches v1.0.0-beta.1, v1.0.0-rc.1, etc.
+
+permissions:
+  contents: write  # Required for creating GitHub Releases
+
+env:
+  NODE_VERSION: "22"
+  PNPM_VERSION: "11"
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # ── Checkout full history so we can build the changelog ─────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history for git log changelog
+
+      # ── Setup pnpm ──────────────────────────────────────────────────────────
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      # ── Setup Node ──────────────────────────────────────────────────────────
+      - name: Setup Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
+
+      # ── Install dependencies ─────────────────────────────────────────────────
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── Quality gates (fail the release if these break) ─────────────────────
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Unit tests
+        run: pnpm test -- --passWithNoTests --ci
+
+      # ── Build changelog from git commits since the last tag ──────────────────
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Find the previous tag (the one before the current tag)
+          CURRENT_TAG="${{ github.ref_name }}"
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | grep -v "^${CURRENT_TAG}$" | head -n 1)
+
+          if [ -z "$PREVIOUS_TAG" ]; then
+            # First ever release — include all commits
+            RANGE="HEAD"
+            echo "First release — including all commits"
+          else
+            RANGE="${PREVIOUS_TAG}..${CURRENT_TAG}"
+            echo "Changelog from ${PREVIOUS_TAG} to ${CURRENT_TAG}"
+          fi
+
+          # Format: "* <hash> <subject>"
+          CHANGELOG=$(git log "$RANGE" --no-merges --pretty=format:"* \`%h\` %s" 2>/dev/null || echo "No commits found")
+
+          # Write to $GITHUB_OUTPUT using heredoc (handles multi-line)
+          {
+            echo "body<<EOF"
+            echo "## What's Changed"
+            echo ""
+            echo "${CHANGELOG}"
+            echo ""
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREVIOUS_TAG}...${CURRENT_TAG}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # ── Create the GitHub Release ────────────────────────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Release ${{ github.ref_name }}"
+          body: ${{ steps.changelog.outputs.body }}
+          # pre-release flag is set automatically when tag contains a hyphen (e.g. v1.0.0-beta.1)
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          draft: false
+          generate_release_notes: false

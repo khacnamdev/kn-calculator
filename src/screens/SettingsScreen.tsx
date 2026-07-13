@@ -1,268 +1,403 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import { useTheme, Card, Switch, SegmentedButtons, IconButton } from 'react-native-paper';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Switch,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useCalculatorStore } from '../store/calculatorStore';
 import { Settings } from '../types/calculator';
+import { useTranslation } from '../i18n/useTranslation';
 
-export function SettingsScreen() {
-  const theme = useTheme();
-  
-  const settings = useCalculatorStore((state) => state.settings);
-  const updateSettings = useCalculatorStore((state) => state.updateSettings);
+// ── iOS dark palette ──────────────────────────────────────────────────────────
+const C = {
+  bg: '#000000',
+  section: '#1C1C1E',
+  border: '#38383A',
+  text: '#FFFFFF',
+  subtext: '#8E8E93',
+  accent: '#FF9F0A',
+  check: '#30D158',
+};
 
-  const handleSettingChange = <K extends keyof Settings>(key: K, value: Settings[K]) => {
-    updateSettings({ [key]: value });
-  };
+// ─────────────────────────────────────────────────────────────────────────────
 
-  const adjustPrecision = (amount: number) => {
-    const nextPrecision = Math.max(4, Math.min(15, settings.precision + amount));
-    handleSettingChange('precision', nextPrecision);
-  };
-
-  const adjustHistoryLimit = (amount: number) => {
-    const nextLimit = Math.max(10, Math.min(500, settings.historyLimit + amount));
-    handleSettingChange('historyLimit', nextLimit);
-  };
-
+interface SectionProps { title: string; children: React.ReactNode }
+function Section({ title, children }: SectionProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
   return (
-    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.content}>
-        
-        {/* Theme Settings Card */}
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <Card.Content>
-            <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>Appearance</Text>
-            
-            <View style={styles.settingItem}>
-              <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>Theme Mode</Text>
-              <SegmentedButtons
-                value={settings.theme}
-                onValueChange={(val) => handleSettingChange('theme', val as any)}
-                buttons={[
-                  { value: 'light', label: 'Light' },
-                  { value: 'dark', label: 'Dark' },
-                  { value: 'system', label: 'System' },
-                ]}
-                style={styles.segmentedButtons}
-              />
-            </View>
-          </Card.Content>
-        </Card>
-
-        {/* Formatting Settings Card */}
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <Card.Content>
-            <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>Separators & Formatting</Text>
-            
-            {/* Decimal Separator */}
-            <View style={styles.settingItem}>
-              <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>Decimal Separator</Text>
-              <SegmentedButtons
-                value={settings.decimalSeparator}
-                onValueChange={(val) => {
-                  const newDec = val as '.' | ',';
-                  // To avoid conflict, swap grouping separator if it matches
-                  let newGroup = settings.groupingSeparator;
-                  if (newDec === '.' && settings.groupingSeparator === '.') {
-                    newGroup = ',';
-                  } else if (newDec === ',' && settings.groupingSeparator === ',') {
-                    newGroup = '.';
-                  }
-                  updateSettings({ decimalSeparator: newDec, groupingSeparator: newGroup });
-                }}
-                buttons={[
-                  { value: '.', label: 'Dot (.)' },
-                  { value: ',', label: 'Comma (,)' },
-                ]}
-                style={styles.segmentedButtons}
-              />
-            </View>
-
-            {/* Grouping Separator */}
-            <View style={styles.settingItem}>
-              <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>Thousands Separator</Text>
-              <SegmentedButtons
-                value={settings.groupingSeparator}
-                onValueChange={(val) => {
-                  const newGroup = val as ',' | '.' | ' ' | 'none';
-                  // To avoid conflict, swap decimal separator if it matches
-                  let newDec = settings.decimalSeparator;
-                  if (newGroup === '.' && settings.decimalSeparator === '.') {
-                    newDec = ',';
-                  } else if (newGroup === ',' && settings.decimalSeparator === ',') {
-                    newDec = '.';
-                  }
-                  updateSettings({ decimalSeparator: newDec, groupingSeparator: newGroup });
-                }}
-                buttons={[
-                  { value: ',', label: 'Comma' },
-                  { value: '.', label: 'Dot' },
-                  { value: ' ', label: 'Space' },
-                  { value: 'none', label: 'None' },
-                ]}
-                style={styles.segmentedButtons}
-              />
-            </View>
-
-            {/* Precision Digits */}
-            <View style={styles.counterSettingItem}>
-              <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>Decimal Precision</Text>
-              <View style={styles.counterContainer}>
-                <IconButton
-                  icon="minus-circle-outline"
-                  size={24}
-                  iconColor={theme.colors.primary}
-                  disabled={settings.precision <= 4}
-                  onPress={() => adjustPrecision(-1)}
-                />
-                <Text style={[styles.counterValue, { color: theme.colors.onSurface }]}>
-                  {settings.precision} digits
-                </Text>
-                <IconButton
-                  icon="plus-circle-outline"
-                  size={24}
-                  iconColor={theme.colors.primary}
-                  disabled={settings.precision >= 15}
-                  onPress={() => adjustPrecision(1)}
-                />
-              </View>
-            </View>
-          </Card.Content>
-        </Card>
-
-        {/* History Configuration Card */}
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <Card.Content>
-            <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>History Settings</Text>
-
-            {/* Auto Save Toggle */}
-            <View style={styles.rowSettingItem}>
-              <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>Auto-Save Calculations</Text>
-              <Switch
-                value={settings.autoSaveHistory}
-                onValueChange={(val) => handleSettingChange('autoSaveHistory', val)}
-                color={theme.colors.primary}
-              />
-            </View>
-
-            {/* History Limit */}
-            <View style={styles.counterSettingItem}>
-              <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>History Limit</Text>
-              <View style={styles.counterContainer}>
-                <IconButton
-                  icon="minus-circle-outline"
-                  size={24}
-                  iconColor={theme.colors.primary}
-                  disabled={settings.historyLimit <= 10}
-                  onPress={() => adjustHistoryLimit(-10)}
-                />
-                <Text style={[styles.counterValue, { color: theme.colors.onSurface }]}>
-                  {settings.historyLimit} items
-                </Text>
-                <IconButton
-                  icon="plus-circle-outline"
-                  size={24}
-                  iconColor={theme.colors.primary}
-                  disabled={settings.historyLimit >= 500}
-                  onPress={() => adjustHistoryLimit(10)}
-                />
-              </View>
-            </View>
-          </Card.Content>
-        </Card>
-
-        {/* Device Feedback Card */}
-        <Card style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-          <Card.Content>
-            <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>Keypad Feedback</Text>
-
-            {/* Vibration Toggle */}
-            <View style={styles.rowSettingItem}>
-              <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>Vibrate on Keypress</Text>
-              <Switch
-                value={settings.vibration}
-                onValueChange={(val) => handleSettingChange('vibration', val)}
-                color={theme.colors.primary}
-              />
-            </View>
-
-            {/* Sound Feedback (Placeholder toggle) */}
-            <View style={styles.rowSettingItem}>
-              <View>
-                <Text style={[styles.settingLabel, { color: theme.colors.onSurface }]}>Audible Key Clicks</Text>
-                <Text style={[styles.settingSublabel, { color: theme.colors.outline }]}>
-                  Uses default system click sound
-                </Text>
-              </View>
-              <Switch
-                value={settings.sound}
-                onValueChange={(val) => handleSettingChange('sound', val)}
-                color={theme.colors.primary}
-              />
-            </View>
-          </Card.Content>
-        </Card>
-
-      </View>
-    </ScrollView>
+    <View style={styles.section}>
+      <Text style={[styles.sectionTitle, isElder && { fontSize: 16, fontWeight: 'bold' }]}>{title.toUpperCase()}</Text>
+      <View style={styles.sectionBox}>{children}</View>
+    </View>
   );
 }
 
+interface RowProps {
+  label: string;
+  sublabel?: string;
+  last?: boolean;
+  children: React.ReactNode;
+}
+function Row({ label, sublabel, last, children }: RowProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
+  return (
+    <View style={[styles.row, !last && styles.rowBorder]}>
+      <View style={styles.rowLabel}>
+        <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>{label}</Text>
+        {sublabel ? <Text style={[styles.rowSubtext, isElder && { fontSize: 15 }]}>{sublabel}</Text> : null}
+      </View>
+      <View style={styles.rowControl}>{children}</View>
+    </View>
+  );
+}
+
+interface ChoiceRowProps {
+  label: string;
+  options: { label: string; value: string }[];
+  value: string;
+  onChange: (v: string) => void;
+  last?: boolean;
+}
+function ChoiceRow({ label, options, value, onChange, last }: ChoiceRowProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
+  return (
+    <View style={[styles.choiceRow, !last && styles.rowBorder]}>
+      <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>{label}</Text>
+      <View style={styles.chipRow}>
+        {options.map((opt) => {
+          const active = opt.value === value;
+          return (
+            <TouchableOpacity
+              key={opt.value}
+              style={[styles.chip, active && styles.chipActive]}
+              onPress={() => onChange(opt.value)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.chipText, active && styles.chipTextActive, isElder && { fontSize: 17 }]}>
+                {opt.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+interface StepperProps {
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  onChange: (v: number) => void;
+  unit: string;
+}
+function Stepper({ value, min, max, step, onChange, unit }: StepperProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
+  return (
+    <View style={styles.stepper}>
+      <TouchableOpacity
+        style={[
+          styles.stepBtn,
+          isElder && { width: 40, height: 40, borderRadius: 20 },
+          value <= min && styles.stepBtnDisabled
+        ]}
+        disabled={value <= min}
+        onPress={() => onChange(value - step)}
+        activeOpacity={0.7}
+      >
+        <MaterialCommunityIcons name="minus" size={isElder ? 24 : 18} color={value <= min ? C.border : C.accent} />
+      </TouchableOpacity>
+      <Text style={[styles.stepValue, { minWidth: isElder ? 90 : 70 }, isElder && { fontSize: 18, fontWeight: 'bold' }]}>
+        {value} {unit}
+      </Text>
+      <TouchableOpacity
+        style={[
+          styles.stepBtn,
+          isElder && { width: 40, height: 40, borderRadius: 20 },
+          value >= max && styles.stepBtnDisabled
+        ]}
+        disabled={value >= max}
+        onPress={() => onChange(value + step)}
+        activeOpacity={0.7}
+      >
+        <MaterialCommunityIcons name="plus" size={isElder ? 24 : 18} color={value >= max ? C.border : C.accent} />
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function SettingsScreen({ navigation }: any) {
+  const t = useTranslation();
+  const settings = useCalculatorStore((s) => s.settings);
+  const updateSettings = useCalculatorStore((s) => s.updateSettings);
+  const isElder = settings.elderMode;
+
+  const set = <K extends keyof Settings>(key: K, value: Settings[K]) =>
+    updateSettings({ [key]: value });
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+
+        {/* Language */}
+        <Section title={t.sectionLanguage}>
+          <ChoiceRow
+            label={t.language}
+            options={[
+              { label: t.langEnglish,    value: 'en' },
+              { label: t.langVietnamese, value: 'vi' },
+            ]}
+            value={settings.language}
+            onChange={(v) => set('language', v as 'en' | 'vi')}
+            last
+          />
+        </Section>
+
+        {/* Appearance */}
+        <Section title={t.sectionAppearance}>
+          <ChoiceRow
+            label={t.theme}
+            options={[
+              { label: t.themeLight,  value: 'light' },
+              { label: t.themeDark,   value: 'dark' },
+              { label: t.themeSystem, value: 'system' },
+            ]}
+            value={settings.theme}
+            onChange={(v) => set('theme', v as any)}
+          />
+          <Row label={t.elderMode} sublabel={t.elderModeSub}>
+            <Switch
+              value={settings.elderMode}
+              onValueChange={(v) => set('elderMode', v)}
+              trackColor={{ false: C.border, true: C.check }}
+              thumbColor={C.text}
+            />
+          </Row>
+          <TouchableOpacity
+            style={[styles.navigateRow, styles.rowBorder]}
+            onPress={() => navigation.navigate('HistoryFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.historyFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.historyFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.navigateRow, styles.rowBorder]}
+            onPress={() => navigation.navigate('ResultFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.resultFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.resultFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navigateRow}
+            onPress={() => navigation.navigate('ExpressionFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.expressionFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.expressionFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
+        </Section>
+
+        {/* Separators */}
+        <Section title={t.sectionFormatting}>
+          <ChoiceRow
+            label={t.decimalSeparator}
+            options={[
+              { label: t.decimalDot,   value: '.' },
+              { label: t.decimalComma, value: ',' },
+            ]}
+            value={settings.decimalSeparator}
+            onChange={(v) => {
+              const newDec = v as '.' | ',';
+              let newGroup = settings.groupingSeparator;
+              if (newDec === '.' && settings.groupingSeparator === '.') newGroup = ',';
+              else if (newDec === ',' && settings.groupingSeparator === ',') newGroup = '.';
+              updateSettings({ decimalSeparator: newDec, groupingSeparator: newGroup });
+            }}
+          />
+          <ChoiceRow
+            label={t.thousandsSeparator}
+            options={[
+              { label: t.thousandsComma, value: ',' },
+              { label: t.thousandsDot,   value: '.' },
+              { label: t.thousandsSpace, value: ' ' },
+              { label: t.thousandsNone,  value: 'none' },
+            ]}
+            value={settings.groupingSeparator}
+            onChange={(v) => {
+              const newGroup = v as any;
+              let newDec = settings.decimalSeparator;
+              if (newGroup === '.' && settings.decimalSeparator === '.') newDec = ',';
+              else if (newGroup === ',' && settings.decimalSeparator === ',') newDec = '.';
+              updateSettings({ decimalSeparator: newDec, groupingSeparator: newGroup });
+            }}
+          />
+          <Row label={t.decimalPrecision} last>
+            <Stepper
+              value={settings.precision}
+              min={4}
+              max={15}
+              step={1}
+              unit={t.unitDigits}
+              onChange={(v) => set('precision', v)}
+            />
+          </Row>
+        </Section>
+
+        {/* History */}
+        <Section title={t.sectionHistory}>
+          <Row label={t.autoSave}>
+            <Switch
+              value={settings.autoSaveHistory}
+              onValueChange={(v) => set('autoSaveHistory', v)}
+              trackColor={{ false: C.border, true: C.check }}
+              thumbColor={C.text}
+            />
+          </Row>
+          <Row label={t.historyLimit} last>
+            <Stepper
+              value={settings.historyLimit}
+              min={10}
+              max={500}
+              step={10}
+              unit={t.unitItems}
+              onChange={(v) => set('historyLimit', v)}
+            />
+          </Row>
+        </Section>
+
+        {/* Feedback */}
+        <Section title={t.sectionFeedback}>
+          <Row label={t.vibrate}>
+            <Switch
+              value={settings.vibration}
+              onValueChange={(v) => set('vibration', v)}
+              trackColor={{ false: C.border, true: C.check }}
+              thumbColor={C.text}
+            />
+          </Row>
+          <Row label={t.sound} sublabel={t.soundSub} last>
+            <Switch
+              value={settings.sound}
+              onValueChange={(v) => set('sound', v)}
+              trackColor={{ false: C.border, true: C.check }}
+              thumbColor={C.text}
+            />
+          </Row>
+        </Section>
+
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  card: {
-    marginBottom: 16,
-    borderRadius: 20,
-    elevation: 1,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  settingItem: {
-    marginBottom: 20,
-  },
-  rowSettingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    marginBottom: 12,
-  },
-  counterSettingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  settingLabel: {
-    fontSize: 15,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  settingSublabel: {
+  safe: { flex: 1, backgroundColor: C.bg },
+  scroll: { flex: 1 },
+  content: { paddingBottom: 40 },
+
+  section: { marginTop: 28, paddingHorizontal: 16 },
+  sectionTitle: {
+    color: C.subtext,
     fontSize: 12,
-    marginTop: 2,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+    marginLeft: 4,
   },
-  segmentedButtons: {
-    width: '100%',
-  },
-  counterContainer: {
+  sectionBox: { backgroundColor: C.section, borderRadius: 12, overflow: 'hidden' },
+
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 50,
   },
-  counterValue: {
+  navigateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 50,
+  },
+  navigateValue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  navigateValText: {
+    color: C.subtext,
     fontSize: 15,
-    fontWeight: '600',
-    minWidth: 80,
-    textAlign: 'center',
   },
+  rowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
+  rowLabel: { flex: 1, marginRight: 12 },
+  rowText: { color: C.text, fontSize: 15 },
+  rowSubtext: { color: C.subtext, fontSize: 12, marginTop: 2 },
+  rowControl: { alignItems: 'flex-end' },
+
+  choiceRow: { paddingHorizontal: 16, paddingVertical: 12 },
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 10 },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#2C2C2E',
+    borderWidth: 1,
+    borderColor: C.border,
+  },
+  chipActive: { backgroundColor: C.accent, borderColor: C.accent },
+  chipText: { color: C.subtext, fontSize: 13, fontWeight: '500' },
+  chipTextActive: { color: '#000000', fontWeight: '700' },
+
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  stepBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#2C2C2E',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepBtnDisabled: { opacity: 0.4 },
+  stepValue: { color: C.text, fontSize: 14, fontWeight: '500', minWidth: 70, textAlign: 'center' },
 });

@@ -15,6 +15,11 @@ export interface Settings {
   sound: boolean;
   autoSaveHistory: boolean;
   historyLimit: number;
+  language: 'en' | 'vi';
+  elderMode: boolean;
+  historyFontSize: number;
+  resultFontSize: number;
+  expressionFontSize: number;
 }
 
 export interface CalculatorState {

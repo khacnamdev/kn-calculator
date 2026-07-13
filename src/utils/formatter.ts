@@ -109,13 +109,11 @@ export function formatExpression(
 
   // Beautify operator symbols for premium Material 3 aesthetics
   formatted = formatted
-    .replace(/\*/g, ' × ')
-    .replace(/\//g, ' ÷ ')
-    .replace(/\+/g, ' + ')
-    .replace(/-/g, ' − ') // Use proper minus sign '−' instead of hyphen '-'
-    .replace(/\(/g, ' ( ')
-    .replace(/\)/g, ' ) ')
-    .replace(/\s+/g, ' ') // Collapse multiple spaces
+    .replace(/\*/g, '×')
+    .replace(/\//g, '÷')
+    .replace(/\+/g, '+')
+    .replace(/-/g, '−') // Use proper minus sign '−' instead of hyphen '-'
+    .replace(/\s+/g, '') // Collapse all spaces
     .trim();
 
   // If the expression has parentheses, let's fix spacing

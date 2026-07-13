@@ -45,16 +45,16 @@ describe('Number and Expression Formatter Tests', () => {
   });
 
   describe('formatExpression', () => {
-    test('should format full expressions with nice operator spacing', () => {
+    test('should format full expressions with closer operator spacing', () => {
       const expr = '12345+678*9%-(12.3/4)';
       const formatted = formatExpression(expr, '.', ',');
-      expect(formatted).toBe('12,345 + 678 × 9% − ( 12.3 ÷ 4 )');
+      expect(formatted).toBe('12,345+678×9%−(12.3÷4)');
     });
 
     test('should format localized separator expressions correctly', () => {
       const expr = '12345+67.89'; // Internally normalized
       const formatted = formatExpression(expr, ',', '.'); // Displays with European formatting
-      expect(formatted).toBe('12.345 + 67,89');
+      expect(formatted).toBe('12.345+67,89');
     });
   });
 });

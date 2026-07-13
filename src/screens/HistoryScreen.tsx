@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 import { useTheme, Button, IconButton } from 'react-native-paper';
 import { FlashList } from '@shopify/flash-list';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useCalculatorStore } from '../store/calculatorStore';
 import { HistoryItemRow } from '../components/HistoryItemRow';
@@ -79,7 +79,6 @@ export function HistoryScreen({ navigation }: any) {
           <FlashList
             data={filteredHistory}
             keyExtractor={(item) => item.id}
-            estimatedItemSize={94}
             renderItem={({ item }) => (
               <HistoryItemRow
                 item={item}

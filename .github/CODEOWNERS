@@ -1,0 +1,26 @@
+# CODEOWNERS
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# MAINTAINER: Replace "OWNER" below with your GitHub username or team.
+# Example (individual):  * @khacnamdev
+# Example (team):        * @my-org/my-team
+#
+# GitHub Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Default owner for every file in the repository
+*                                   @OWNER
+
+# ── CI / DevOps ──────────────────────────────────────────────────────────────
+.github/                            @OWNER
+*.yml                               @OWNER
+*.yaml                              @OWNER
+
+# ── Core source ──────────────────────────────────────────────────────────────
+src/                                @OWNER
+index.ts                            @OWNER
+app.json                            @OWNER
+
+# ── Dependencies ─────────────────────────────────────────────────────────────
+package.json                        @OWNER
+pnpm-lock.yaml                      @OWNER

@@ -1,0 +1,5 @@
+allowBuilds:
+  unrs-resolver: true
+
+overrides:
+  "@types/react": "19.1.17"
