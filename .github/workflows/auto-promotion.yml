@@ -1,0 +1,88 @@
+name: 🚀 Auto Promotion PR
+
+on:
+  push:
+    branches:
+      - develop
+      - staging
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: auto-promotion-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  auto-promotion:
+    name: Create Promotion Pull Request
+
+    if: github.actor != 'github-actions[bot]'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine promotion target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${GITHUB_REF_NAME}" in
+            develop)
+              echo "HEAD=develop" >> "$GITHUB_ENV"
+              echo "BASE=staging" >> "$GITHUB_ENV"
+              ;;
+            staging)
+              echo "HEAD=staging" >> "$GITHUB_ENV"
+              echo "BASE=main" >> "$GITHUB_ENV"
+              ;;
+            *)
+              echo "Unsupported branch: ${GITHUB_REF_NAME}"
+              exit 1
+              ;;
+          esac
+
+      - name: Check if PR already exists
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          API="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls?state=open&head=${GITHUB_REPOSITORY%/*}:${HEAD}&base=${BASE}"
+
+          RESPONSE=$(curl -fsSL \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "$API")
+
+          COUNT=$(echo "$RESPONSE" | jq 'length')
+
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Create promotion PR
+        if: ${{ steps.check.outputs.count == '0' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -fsSL \
+            -X POST \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls" \
+            -d @- <<EOF
+          {
+            "title": "chore(release): promote ${HEAD} → ${BASE}",
+            "head": "${HEAD}",
+            "base": "${BASE}",
+            "body": "## 🚀 Automatic Promotion\n\nThis Pull Request was created automatically.\n\n### Promotion\n- **Source:** \`${HEAD}\`\n- **Target:** \`${BASE}\`\n\n### Checklist\n- [ ] CI passed\n- [ ] Code reviewed\n- [ ] Ready to merge\n\n---\nGenerated automatically by GitHub Actions."
+          }
+          EOF
