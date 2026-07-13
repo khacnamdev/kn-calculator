@@ -1,12 +1,14 @@
-# Walkthrough - Expanded Keypad Buttons via Spacing Adjustment
+# Walkthrough - History Scroll gesture Refinement
 
-We have adjusted the layout parameters of the keypad to increase the tap targets:
+We have adjusted the layout to ensure swiping and scrolling on the history logs is extremely smooth:
 
-1. **Reduced Spacing & Larger Buttons:**
-   - Reduced the keypad container's horizontal padding from `16` to `8` inside [CalculatorScreen.tsx](file:///home/namnk/ws/github/kn-calculator/src/screens/CalculatorScreen.tsx).
-   - Reduced the gap between keys within rows and between keypad rows from `8` to `4` (using `gap: 4`).
-   - Recalculated the `BTN_SIZE` constant dynamically: `const BTN_SIZE = (Dimensions.get("window").width - 8 * 2 - 4 * 4) / 5;`. This leverages the saved padding and gap spaces to increase the diameter of the circular buttons (e.g. from `65.2`px to `71.6`px on standard 390px screens).
-   - Updated double-width (`btnWide`) and double-height (`btnTall`) button calculations to use the new gap size: `BTN_SIZE * 2 + 4`.
+1. **Uninterrupted Scroll Gestures:**
+   - Replaced the screen-wide parent `Pressable` wrapping in [CalculatorScreen.tsx](file:///home/namnk/ws/github/kn-calculator/src/screens/CalculatorScreen.tsx) with a standard `<View style={styles.root}>`.
+   - This ensures swipe/touch events propagate directly to the history `ScrollView` instead of being intercepted by a parent press responder, allowing the user to swipe and scroll on any region of the history log.
+   - Wrapped the lower display area and the keypad in a dedicated `<Pressable style={styles.lowerContainer}>` so that taps on the keypad or display area still correctly trigger the hidden keyboard focus.
+
+2. **Visible Scroll Indicator:**
+   - Changed `showsVerticalScrollIndicator` from `false` to `true` on the history `ScrollView` inside [CalculatorScreen.tsx](file:///home/namnk/ws/github/kn-calculator/src/screens/CalculatorScreen.tsx) to display the scrollbar when scrolling.
 
 ---
 

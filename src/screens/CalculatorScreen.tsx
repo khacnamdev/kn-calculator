@@ -134,7 +134,7 @@ export function CalculatorScreen({ navigation }: any) {
         blurOnSubmit={false}
       />
 
-      <Pressable style={styles.root} onPress={focusInput}>
+      <View style={styles.root}>
         {/* ── HISTORY AREA (unscrolled vs scrollable) ── */}
         {settings.elderMode ? (
           <View
@@ -175,7 +175,7 @@ export function CalculatorScreen({ navigation }: any) {
             ref={scrollRef}
             style={styles.historyScroll}
             contentContainerStyle={styles.historyContent}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
           >
             {history.length === 0 ? (
               <Text style={styles.historyEmpty}>{t.historyEmpty}</Text>
@@ -194,7 +194,8 @@ export function CalculatorScreen({ navigation }: any) {
           </ScrollView>
         )}
 
-        {/* ── CURRENT DISPLAY ── */}
+        <Pressable onPress={focusInput} style={styles.lowerContainer}>
+          {/* ── CURRENT DISPLAY ── */}
         <View style={styles.displayArea}>
           <Text
             style={[
@@ -413,7 +414,8 @@ export function CalculatorScreen({ navigation }: any) {
           </View>
         </View>
       </Pressable>
-    </SafeAreaView>
+    </View>
+  </SafeAreaView>
   );
 }
 
@@ -494,6 +496,9 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
+  },
+  lowerContainer: {
+    width: "100%",
   },
 
   // ── History ──────────────────────────────────────────────
