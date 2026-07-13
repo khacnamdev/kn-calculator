@@ -44,6 +44,8 @@ export type TranslationKeys = {
   historyLimit: string;
   unitItems: string;
   historyFontSize: string;
+  resultFontSize: string;
+  expressionFontSize: string;
 
   // Appearance
   elderMode: string;
@@ -94,6 +96,8 @@ const en: TranslationKeys = {
   historyLimit: 'History Limit',
   unitItems: 'items',
   historyFontSize: 'History Font Size',
+  resultFontSize: 'Result Font Size',
+  expressionFontSize: 'Expression Font Size',
 
   vibrate: 'Vibrate on Keypress',
   sound: 'Audible Key Clicks',
@@ -140,6 +144,8 @@ const vi: TranslationKeys = {
   historyLimit: 'Giới hạn lịch sử',
   unitItems: 'mục',
   historyFontSize: 'Cỡ chữ lịch sử',
+  resultFontSize: 'Cỡ chữ kết quả',
+  expressionFontSize: 'Cỡ chữ phép tính',
 
   vibrate: 'Rung khi nhấn phím',
   sound: 'Âm thanh phím',

@@ -187,7 +187,7 @@ export function SettingsScreen({ navigation }: any) {
             />
           </Row>
           <TouchableOpacity
-            style={styles.navigateRow}
+            style={[styles.navigateRow, styles.rowBorder]}
             onPress={() => navigation.navigate('HistoryFontSize')}
             activeOpacity={0.7}
           >
@@ -197,6 +197,36 @@ export function SettingsScreen({ navigation }: any) {
             <View style={styles.navigateValue}>
               <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
                 {settings.historyFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.navigateRow, styles.rowBorder]}
+            onPress={() => navigation.navigate('ResultFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.resultFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.resultFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navigateRow}
+            onPress={() => navigation.navigate('ExpressionFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.expressionFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.expressionFontSize} px
               </Text>
               <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
             </View>

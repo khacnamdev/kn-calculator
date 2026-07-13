@@ -18,6 +18,8 @@ export interface Settings {
   language: 'en' | 'vi';
   elderMode: boolean;
   historyFontSize: number;
+  resultFontSize: number;
+  expressionFontSize: number;
 }
 
 export interface CalculatorState {

@@ -39,6 +39,8 @@ const DEFAULT_SETTINGS: Settings = {
   language: 'en',
   elderMode: true,
   historyFontSize: 24,
+  resultFontSize: 48,
+  expressionFontSize: 72,
 };
 
 const parser = new Parser();
