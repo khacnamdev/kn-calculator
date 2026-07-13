@@ -196,226 +196,228 @@ export function CalculatorScreen({ navigation }: any) {
 
         <Pressable onPress={focusInput} style={styles.lowerContainer}>
           {/* ── CURRENT DISPLAY ── */}
-        <View style={styles.displayArea}>
-          <Text
-            style={[
-              styles.displayResult,
-              {
-                fontSize: !result
-                  ? settings.expressionFontSize
-                  : settings.resultFontSize,
-                fontWeight: !result ? "300" : "500",
-                color: "#FFFFFF",
-                lineHeight: !result
-                  ? settings.expressionFontSize + 8
-                  : settings.resultFontSize + 8,
-              },
-            ]}
-            numberOfLines={!result ? 5 : 1}
-            adjustsFontSizeToFit
-            minimumFontScale={
-              !result
-                ? (settings.resultFontSize + 4) / settings.expressionFontSize
-                : undefined
-            }
-          >
-            {showBig}
-          </Text>
-          {showSmall ? (
+          <View style={styles.displayArea}>
             <Text
               style={[
-                styles.displayExpr,
+                styles.displayResult,
                 {
-                  fontSize: settings.expressionFontSize,
-                  fontWeight: "300",
+                  fontSize: !result
+                    ? settings.expressionFontSize
+                    : settings.resultFontSize,
+                  fontWeight: !result ? "300" : "500",
                   color: "#FFFFFF",
-                  lineHeight: settings.expressionFontSize + 8,
+                  lineHeight: !result
+                    ? settings.expressionFontSize + 8
+                    : settings.resultFontSize + 8,
                 },
               ]}
-              numberOfLines={5}
+              numberOfLines={!result ? 5 : 1}
               adjustsFontSizeToFit
               minimumFontScale={
-                (settings.resultFontSize + 4) / settings.expressionFontSize
+                !result
+                  ? (settings.resultFontSize + 4) / settings.expressionFontSize
+                  : undefined
               }
             >
-              {showSmall}
+              {showBig}
             </Text>
-          ) : null}
-        </View>
-
-        {/* ── KEYPAD ── */}
-        <View style={styles.keypad}>
-          {/* Row 1 */}
-          <View style={styles.row}>
-            <IosButton
-              label="AC"
-              bg={C.funcBg}
-              fg={C.funcText}
-              onPress={() => handleButtonPress("AC")}
-            />
-            <IosButton
-              label="+/-"
-              bg={C.funcBg}
-              fg={C.funcText}
-              onPress={() => handleButtonPress("±")}
-            />
-            <IosButton
-              label="%"
-              bg={C.funcBg}
-              fg={C.funcText}
-              onPress={() => handleButtonPress("%")}
-            />
-            <IosButton
-              label="←"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("backspace")}
-              onLongPress={() => deleteLastToken()}
-              icon="backspace-outline"
-            />
-            <IosButton
-              label="⊞"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => navigation.navigate("Settings")}
-              icon="dots-grid"
-            />
+            {showSmall ? (
+              <Text
+                style={[
+                  styles.displayExpr,
+                  {
+                    fontSize: settings.expressionFontSize,
+                    fontWeight: "300",
+                    color: "#FFFFFF",
+                    lineHeight: settings.expressionFontSize + 8,
+                  },
+                ]}
+                numberOfLines={5}
+                adjustsFontSizeToFit
+                minimumFontScale={
+                  (settings.resultFontSize + 4) / settings.expressionFontSize
+                }
+              >
+                {showSmall}
+              </Text>
+            ) : null}
           </View>
 
-          {/* Row 2 */}
-          <View style={styles.row}>
-            <IosButton
-              label="7"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("7")}
-            />
-            <IosButton
-              label="8"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("8")}
-            />
-            <IosButton
-              label="9"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("9")}
-            />
-            <IosButton
-              label="÷"
-              bg={C.opBg}
-              fg={C.opText}
-              onPress={() => handleButtonPress("/")}
-            />
-            <IosButton
-              label="🗑"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("clear_history")}
-              icon="trash-can-outline"
-            />
-          </View>
+          {/* ── KEYPAD ── */}
+          <View style={styles.keypad}>
+            {/* Row 1 */}
+            <View style={styles.row}>
+              <IosButton
+                label="AC"
+                bg={C.funcBg}
+                fg={C.funcText}
+                onPress={() => handleButtonPress("AC")}
+              />
+              <IosButton
+                label="+/-"
+                bg={C.funcBg}
+                fg={C.funcText}
+                // onPress={() => handleButtonPress("±")}
+              />
+              <IosButton
+                label="%"
+                bg={C.funcBg}
+                fg={C.funcText}
+                // onPress={() => handleButtonPress("%")}
+              />
+              <IosButton
+                label="←"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("backspace")}
+                onLongPress={() => deleteLastToken()}
+                icon="backspace-outline"
+              />
+              <IosButton
+                label="⊞"
+                bg={C.numBg}
+                fg={C.numText}
+                icon="dots-grid"
+                onLongPress={() => navigation.navigate("Settings")}
+                delayLongPress={8000}
+              />
+            </View>
 
-          {/* Row 3 */}
-          <View style={styles.row}>
-            <IosButton
-              label="4"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("4")}
-            />
-            <IosButton
-              label="5"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("5")}
-            />
-            <IosButton
-              label="6"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("6")}
-            />
-            <IosButton
-              label="×"
-              bg={C.opBg}
-              fg={C.opText}
-              onPress={() => handleButtonPress("*")}
-            />
-            <IosButton
-              label="≡"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => navigation.navigate("Settings")}
-              icon="format-list-bulleted"
-            />
-          </View>
+            {/* Row 2 */}
+            <View style={styles.row}>
+              <IosButton
+                label="7"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("7")}
+              />
+              <IosButton
+                label="8"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("8")}
+              />
+              <IosButton
+                label="9"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("9")}
+              />
+              <IosButton
+                label="÷"
+                bg={C.opBg}
+                fg={C.opText}
+                onPress={() => handleButtonPress("/")}
+              />
+              <IosButton
+                label="🗑"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("clear_history")}
+                icon="trash-can-outline"
+              />
+            </View>
 
-          {/* Row 4 */}
-          <View style={styles.row}>
-            <IosButton
-              label="1"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("1")}
-            />
-            <IosButton
-              label="2"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("2")}
-            />
-            <IosButton
-              label="3"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("3")}
-            />
-            <IosButton
-              label="−"
-              bg={C.opBg}
-              fg={C.opText}
-              onPress={() => handleButtonPress("-")}
-            />
-            {/* Equals spans rows 4–5 */}
-            <IosButton
-              label="="
-              bg={C.opBg}
-              fg={C.opText}
-              onPress={() => handleButtonPress("=")}
-              tall
-            />
-          </View>
+            {/* Row 3 */}
+            <View style={styles.row}>
+              <IosButton
+                label="4"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("4")}
+              />
+              <IosButton
+                label="5"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("5")}
+              />
+              <IosButton
+                label="6"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("6")}
+              />
+              <IosButton
+                label="×"
+                bg={C.opBg}
+                fg={C.opText}
+                onPress={() => handleButtonPress("*")}
+              />
+              <IosButton
+                label="≡"
+                bg={C.numBg}
+                fg={C.numText}
+                icon="format-list-bulleted"
+                onLongPress={() => navigation.navigate("Settings")}
+                delayLongPress={8000}
+              />
+            </View>
 
-          {/* Row 5 */}
-          <View style={styles.row}>
-            <IosButton
-              label="0"
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress("0")}
-              wide
-            />
-            <IosButton
-              label={settings.decimalSeparator}
-              bg={C.numBg}
-              fg={C.numText}
-              onPress={() => handleButtonPress(".")}
-            />
-            <IosButton
-              label="+"
-              bg={C.opBg}
-              fg={C.opText}
-              onPress={() => handleButtonPress("+")}
-            />
-            {/* Spacer for the tall = button above */}
-            <View style={styles.btnSpacer} />
+            {/* Row 4 */}
+            <View style={styles.row}>
+              <IosButton
+                label="1"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("1")}
+              />
+              <IosButton
+                label="2"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("2")}
+              />
+              <IosButton
+                label="3"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("3")}
+              />
+              <IosButton
+                label="−"
+                bg={C.opBg}
+                fg={C.opText}
+                onPress={() => handleButtonPress("-")}
+              />
+              {/* Equals spans rows 4–5 */}
+              <IosButton
+                label="="
+                bg={C.opBg}
+                fg={C.opText}
+                onPress={() => handleButtonPress("=")}
+                tall
+              />
+            </View>
+
+            {/* Row 5 */}
+            <View style={styles.row}>
+              <IosButton
+                label="0"
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress("0")}
+                wide
+              />
+              <IosButton
+                label={settings.decimalSeparator}
+                bg={C.numBg}
+                fg={C.numText}
+                onPress={() => handleButtonPress(".")}
+              />
+              <IosButton
+                label="+"
+                bg={C.opBg}
+                fg={C.opText}
+                onPress={() => handleButtonPress("+")}
+              />
+              {/* Spacer for the tall = button above */}
+              <View style={styles.btnSpacer} />
+            </View>
           </View>
-        </View>
-      </Pressable>
-    </View>
-  </SafeAreaView>
+        </Pressable>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -430,6 +432,7 @@ interface IosButtonProps {
   icon?: string;
   wide?: boolean; // double-width (the 0 button)
   tall?: boolean; // double-height (the = button)
+  delayLongPress?: number;
 }
 
 function IosButton({
@@ -441,6 +444,7 @@ function IosButton({
   icon,
   wide,
   tall,
+  delayLongPress = 500,
 }: IosButtonProps) {
   const settings = useCalculatorStore((s) => s.settings);
   const isElder = settings.elderMode;
@@ -451,7 +455,7 @@ function IosButton({
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
-      delayLongPress={500}
+      delayLongPress={delayLongPress}
       style={({ pressed }) => [
         styles.btn,
         wide && styles.btnWide,
