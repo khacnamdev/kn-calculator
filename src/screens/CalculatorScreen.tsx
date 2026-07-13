@@ -427,7 +427,7 @@ interface IosButtonProps {
   label: string;
   bg: string;
   fg: string;
-  onPress: () => void;
+  onPress?: () => void;
   onLongPress?: () => void;
   icon?: string;
   wide?: boolean; // double-width (the 0 button)
