@@ -1,10 +1,13 @@
-# Walkthrough - Workflow YAML Syntax Fix
+# Walkthrough - Documentation Setup
 
-We have fixed the syntax error in the workflow YAML configuration:
+We have created the standard open-source documentation files for the React Native/Expo application:
 
-1. **YAML Multiline Indentation Fix:**
-   - Indented the multiline body text block for `gh pr create` by 10 spaces inside [.github/workflows/auto-promotion.yml](file:///home/namnk/ws/github/kn-calculator/.github/workflows/auto-promotion.yml).
-   - This ensures the YAML parser correctly recognizes that the text is part of the `run:` block scalar instead of interpreting the unindented lines as new root-level map keys.
+1. **Created Documentation Files:**
+   - [README.md](file:///home/namnk/ws/github/kn-calculator/README.md): Documented project features, tech stack, architecture directory structure, local setup guide, and project script list.
+   - [CHANGELOG.md](file:///home/namnk/ws/github/kn-calculator/CHANGELOG.md): Formatted following "Keep a Changelog" rules for initial release `0.1.0`.
+   - [CONTRIBUTING.md](file:///home/namnk/ws/github/kn-calculator/CONTRIBUTING.md): Specified cloning workflows, branch conventions, Conventional Commit formatting, and pull request requirements.
+   - [DEVELOPMENT.md](file:///home/namnk/ws/github/kn-calculator/DEVELOPMENT.md): Detailed local debugging menus, tool installations, and common troubleshooting steps.
+   - [SECURITY.md](file:///home/namnk/ws/github/kn-calculator/SECURITY.md): Documented reporting channels, security principles, and disclosures guidelines.
 
 ---
 
