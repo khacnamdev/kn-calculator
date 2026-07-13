@@ -49,8 +49,6 @@ function HistoryRow({ item, fontSize, isElder }: { item: HistoryItem; fontSize?:
           { fontSize: size },
           isElder && { fontWeight: 'bold' }
         ]}
-        numberOfLines={2}
-        adjustsFontSizeToFit
       >
         <Text style={[styles.historyExpr, isElder && { fontWeight: 'bold' }]}>{expr}=</Text>
         <Text style={[styles.historyResultText, isElder && { fontWeight: 'bold' }]}>{item.result}</Text>

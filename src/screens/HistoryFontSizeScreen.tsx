@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable, SafeAreaView } from 'react-native';
 import { useCalculatorStore } from '../store/calculatorStore';
 
-const FONT_SIZE_STEPS = [16, 20, 24, 28, 32, 36, 40];
+const FONT_SIZE_STEPS = [16, 20, 24, 32, 40, 48, 60];
 
 export function HistoryFontSizeScreen() {
   const settings = useCalculatorStore((s) => s.settings);
