@@ -1,0 +1,6 @@
+- `[x]` Update `expo` dependency in `package.json` to SDK 57
+- `[x]` Run `pnpm dlx expo install --fix` to resolve and align all related native packages
+- `[x]` Execute `pnpm dlx expo-doctor` to verify clean dependencies configuration
+- `[x]` Create `docs/git-workflow.md` detailing the recommended branch strategy
+- `[x]` Persist implementation plan and task documents inside the repository
+- `[x]` Run local automated tests (`pnpm test`) and syntax validation checks (`pnpm run typecheck`, `pnpm run lint`)
