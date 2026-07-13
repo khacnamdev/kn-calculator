@@ -1,0 +1,92 @@
+name: 🚀 Auto Promotion PR
+
+on:
+  push:
+    branches:
+      - develop
+      - staging
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: auto-promotion-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  auto-promotion:
+    name: Create Promotion Pull Request
+
+    if: github.actor != 'github-actions[bot]'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine promotion target
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${GITHUB_REF_NAME}" in
+            develop)
+              echo "HEAD=develop" >> "$GITHUB_ENV"
+              echo "BASE=staging" >> "$GITHUB_ENV"
+              ;;
+            staging)
+              echo "HEAD=staging" >> "$GITHUB_ENV"
+              echo "BASE=main" >> "$GITHUB_ENV"
+              ;;
+            *)
+              echo "Unsupported branch: ${GITHUB_REF_NAME}"
+              exit 1
+              ;;
+          esac
+
+      - name: Check if PR already exists
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          COUNT=$(gh pr list \
+            --state open \
+            --head "${HEAD}" \
+            --base "${BASE}" \
+            --json number \
+            --jq 'length')
+
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Create promotion PR
+        if: ${{ steps.check.outputs.count == '0' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh pr create \
+            --title "chore(release): promote ${HEAD} → ${BASE}" \
+            --head "${HEAD}" \
+            --base "${BASE}" \
+            --body "## 🚀 Automatic Promotion
+
+          This Pull Request was created automatically.
+
+          ### Promotion
+          - **Source:** \`${HEAD}\`
+          - **Target:** \`${BASE}\`
+
+          ### Checklist
+          - [ ] CI passed
+          - [ ] Code reviewed
+          - [ ] Ready to merge
+
+          ---
+          Generated automatically by GitHub Actions."

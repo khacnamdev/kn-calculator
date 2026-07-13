@@ -64,4 +64,4 @@ jobs:
 
       # ── Unit tests ───────────────────────────────────────────────────────────
       - name: Run tests (jest)
-        run: pnpm test -- --passWithNoTests --ci
+        run: pnpm run test:ci

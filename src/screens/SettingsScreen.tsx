@@ -29,9 +29,10 @@ const C = {
 
 interface SectionProps { title: string; children: React.ReactNode }
 function Section({ title, children }: SectionProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title.toUpperCase()}</Text>
+      <Text style={[styles.sectionTitle, isElder && { fontSize: 16, fontWeight: 'bold' }]}>{title.toUpperCase()}</Text>
       <View style={styles.sectionBox}>{children}</View>
     </View>
   );
@@ -44,11 +45,12 @@ interface RowProps {
   children: React.ReactNode;
 }
 function Row({ label, sublabel, last, children }: RowProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
   return (
     <View style={[styles.row, !last && styles.rowBorder]}>
       <View style={styles.rowLabel}>
-        <Text style={styles.rowText}>{label}</Text>
-        {sublabel ? <Text style={styles.rowSubtext}>{sublabel}</Text> : null}
+        <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>{label}</Text>
+        {sublabel ? <Text style={[styles.rowSubtext, isElder && { fontSize: 15 }]}>{sublabel}</Text> : null}
       </View>
       <View style={styles.rowControl}>{children}</View>
     </View>
@@ -63,9 +65,10 @@ interface ChoiceRowProps {
   last?: boolean;
 }
 function ChoiceRow({ label, options, value, onChange, last }: ChoiceRowProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
   return (
     <View style={[styles.choiceRow, !last && styles.rowBorder]}>
-      <Text style={styles.rowText}>{label}</Text>
+      <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>{label}</Text>
       <View style={styles.chipRow}>
         {options.map((opt) => {
           const active = opt.value === value;
@@ -76,7 +79,7 @@ function ChoiceRow({ label, options, value, onChange, last }: ChoiceRowProps) {
               onPress={() => onChange(opt.value)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.chipText, active && styles.chipTextActive]}>
+              <Text style={[styles.chipText, active && styles.chipTextActive, isElder && { fontSize: 17 }]}>
                 {opt.label}
               </Text>
             </TouchableOpacity>
@@ -96,24 +99,35 @@ interface StepperProps {
   unit: string;
 }
 function Stepper({ value, min, max, step, onChange, unit }: StepperProps) {
+  const isElder = useCalculatorStore((s) => s.settings.elderMode);
   return (
     <View style={styles.stepper}>
       <TouchableOpacity
-        style={[styles.stepBtn, value <= min && styles.stepBtnDisabled]}
+        style={[
+          styles.stepBtn,
+          isElder && { width: 40, height: 40, borderRadius: 20 },
+          value <= min && styles.stepBtnDisabled
+        ]}
         disabled={value <= min}
         onPress={() => onChange(value - step)}
         activeOpacity={0.7}
       >
-        <MaterialCommunityIcons name="minus" size={18} color={value <= min ? C.border : C.accent} />
+        <MaterialCommunityIcons name="minus" size={isElder ? 24 : 18} color={value <= min ? C.border : C.accent} />
       </TouchableOpacity>
-      <Text style={styles.stepValue}>{value} {unit}</Text>
+      <Text style={[styles.stepValue, { minWidth: isElder ? 90 : 70 }, isElder && { fontSize: 18, fontWeight: 'bold' }]}>
+        {value} {unit}
+      </Text>
       <TouchableOpacity
-        style={[styles.stepBtn, value >= max && styles.stepBtnDisabled]}
+        style={[
+          styles.stepBtn,
+          isElder && { width: 40, height: 40, borderRadius: 20 },
+          value >= max && styles.stepBtnDisabled
+        ]}
         disabled={value >= max}
         onPress={() => onChange(value + step)}
         activeOpacity={0.7}
       >
-        <MaterialCommunityIcons name="plus" size={18} color={value >= max ? C.border : C.accent} />
+        <MaterialCommunityIcons name="plus" size={isElder ? 24 : 18} color={value >= max ? C.border : C.accent} />
       </TouchableOpacity>
     </View>
   );
@@ -121,10 +135,11 @@ function Stepper({ value, min, max, step, onChange, unit }: StepperProps) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function SettingsScreen() {
+export function SettingsScreen({ navigation }: any) {
   const t = useTranslation();
   const settings = useCalculatorStore((s) => s.settings);
   const updateSettings = useCalculatorStore((s) => s.updateSettings);
+  const isElder = settings.elderMode;
 
   const set = <K extends keyof Settings>(key: K, value: Settings[K]) =>
     updateSettings({ [key]: value });
@@ -162,8 +177,60 @@ export function SettingsScreen() {
             ]}
             value={settings.theme}
             onChange={(v) => set('theme', v as any)}
-            last
           />
+          <Row label={t.elderMode} sublabel={t.elderModeSub}>
+            <Switch
+              value={settings.elderMode}
+              onValueChange={(v) => set('elderMode', v)}
+              trackColor={{ false: C.border, true: C.check }}
+              thumbColor={C.text}
+            />
+          </Row>
+          <TouchableOpacity
+            style={[styles.navigateRow, styles.rowBorder]}
+            onPress={() => navigation.navigate('HistoryFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.historyFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.historyFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.navigateRow, styles.rowBorder]}
+            onPress={() => navigation.navigate('ResultFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.resultFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.resultFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navigateRow}
+            onPress={() => navigation.navigate('ExpressionFontSize')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.rowText, isElder && { fontSize: 20, fontWeight: 'bold' }]}>
+              {t.expressionFontSize}
+            </Text>
+            <View style={styles.navigateValue}>
+              <Text style={[styles.navigateValText, isElder && { fontSize: 17 }]}>
+                {settings.expressionFontSize} px
+              </Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color={C.subtext} />
+            </View>
+          </TouchableOpacity>
         </Section>
 
         {/* Separators */}
@@ -284,6 +351,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     minHeight: 50,
+  },
+  navigateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 50,
+  },
+  navigateValue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  navigateValText: {
+    color: C.subtext,
+    fontSize: 15,
   },
   rowBorder: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: C.border },
   rowLabel: { flex: 1, marginRight: 12 },
