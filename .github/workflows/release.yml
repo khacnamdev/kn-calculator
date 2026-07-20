@@ -38,7 +38,7 @@ jobs:
     steps:
       # ── Checkout full history so we can build the changelog ─────────────────
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0   # full history for git log changelog
 
