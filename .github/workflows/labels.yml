@@ -45,7 +45,7 @@ jobs:
     steps:
       # ── Checkout so the labels.yml file is available ─────────────────────────
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # ── Sync labels using EndBug/label-sync ──────────────────────────────────
       # Docs: https://github.com/EndBug/label-sync
